@@ -1,0 +1,22 @@
+import os
+import shutil
+# Copying Joy's stuff
+
+initial_model = "/dls/labxchem/data/2017/lb18145-44/processing/analysis/initial_model"
+processed_datasets = "/dls/labxchem/data/2017/lb18145-44/processing/group_deposition/processed_datasets"
+
+xtal_folders =[ xtal_dir
+                for xtal_dir in os.listdir(processed_datasets)
+                if os.path.isdir(os.path.join(processed_datasets,xtal_dir))]
+
+for xtal in xtal_folders:
+    shutil.copy(src=os.path.join(initial_model,xtal,"dimple.pdb"),
+                dst=os.path.join(processed_datasets,xtal,"dimple.pdb"))
+    shutil.copy(src=os.path.join(initial_model,xtal,"dimple.mtz"),
+                dst=os.path.join(processed_datasets,xtal,"dimple.mtz"))
+    os.system("module load phenix; phenix.mtz2map {} {} output.directory='{}'".format(
+        os.path.join(processed_datasets,xtal,"dimple.mtz"),
+        os.path.join(processed_datasets,xtal,"dimple.pdb"),
+        os.path.join(processed_datasets,xtal)
+    ))
+    print(xtal)
